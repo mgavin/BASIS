@@ -41,7 +41,9 @@ __all__ = [] # use of import * is discouraged
 # Note: imp.load_source() would be quite more compact. However, the following
 #       will also still work with Python 3.1 and 3.2. For Python 3.3 a
 #       different implementation might be necessary using loader objects.
-import imp
+#import imp
+import importlib
+import importlib.util
 # path to BASIS Utilities modules
 _path = os.getenv('BASIS_PYTHONPATH')
 if _path is None:
@@ -58,29 +60,42 @@ if (not os.path.isfile(os.path.join(_path, 'basis/utilities.py' )) and
     not os.path.isfile(os.path.join(_path, 'basis/utilities.pyc'))):
     raise "Module basis.utilities not found at " + _path + "!\nSpecify path using the PYTHONPATH or BASIS_PYTHONPATH environment variable."
 # basis/__init__.py must be loaded first
-(_file, _filepath, _desc) = imp.find_module('basis', [_path])
-try:
-    basis = imp.load_module('basis', _file, _filepath, _desc)
-finally:
-    if _file: _file.close()
+# (_file, _filepath, _desc) = imp.find_module('basis', [_path])
+# try:
+#     basis = imp.load_module('basis', _file, _filepath, _desc)
+# finally:
+#     if _file: _file.close()
 # then we can load basis.utilities
-(_file, _filepath, _desc) = imp.find_module('utilities', [os.path.join(_path, 'basis')])
-try:
-    utilities = imp.load_module('basis.utilities', _file, _filepath, _desc)
-finally:
-    if _file: _file.close()
+spec = importlib.machinery.PathFinder.find_spec('basis', [_path])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+sys.modules[spec.name] = module
+
+# (_file, _filepath, _desc) = imp.find_module('utilities', [os.path.join(_path, 'basis')])
+# try:
+#     utilities = imp.load_module('basis.utilities', _file, _filepath, _desc)
+# finally:
+#     if _file: _file.close()
+spec = importlib.machinery.PathFinder.find_spec('basis.utilities', [os.path.join(_path, 'basis')])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+sys.modules[spec.name] = module
+
 # clean up scope
 del _path
 del _syspath
-del _file
-del _filepath
-del _desc
-del imp
+# del _file
+# del _filepath
+# del _desc
+del spec
+del module
+del importlib
 
 
 ## @addtogroup BasisPythonUtilities
 # @{
 
+from basis import utilities
 
 # ============================================================================
 # Python 2 and 3 compatibility

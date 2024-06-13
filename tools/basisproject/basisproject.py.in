@@ -61,7 +61,7 @@ mimetypes.add_type('text/doxygen',          '.dox')
 # ============================================================================
 # auxiliary functions
 # ============================================================================
- 
+
 # ----------------------------------------------------------------------------
 def read_rspargs(rspfile, argv):
     try:
@@ -286,7 +286,7 @@ def get_template(template, path):
         minors = {}
         for f in os.listdir(root):
             if os.path.isdir(os.path.join(root, f)):
-                m = re.match('(\d+)\.(\d+)$', f)
+                m = re.match(r'(\d+)\.(\d+)$', f)
                 if not m is None:
                     k = int(m.group(1))
                     v = int(m.group(2))
@@ -830,12 +830,12 @@ class AccumulatorForNumbersOfChangesAndErrors(object):
 # ----------------------------------------------------------------------------
 if __name__ == '__main__':
     ok = True
-    
+
     # ------------------------------------------------------------------------
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
   This tool can create a new project from a template or modify an existing project.\n\n
-  
+
   Creating a new project:
 
     Example for creating a new project which contains the full functionality
@@ -853,7 +853,7 @@ if __name__ == '__main__':
           start with the --default set of files and add others when needed.
 
   Updating a project:
- 
+
     Functionality can be removed by updating a project with the --no* options.
     However, directories and files are only deleted if they are empty or were
     not modified, respectively, by the project developer since their creation.
@@ -869,24 +869,24 @@ if __name__ == '__main__':
 
   Upgrading a project:
 
-    The basisproject tool can upgrade an existing project to a newer template version, 
+    The basisproject tool can upgrade an existing project to a newer template version,
     given that the existing directory structure and file names were preserved.
-  
+
     User changes to previously added template files are kept and merged with the
     changes of the project template using a so-called three-way diff. This update
     process is similar to how remote changes are merged with your working copy changes
     by version control systems such as Subversion or Git.
-  
+
     If the automatic file merge is not successful, basisproject creates:
-  
+
         - a copy of the original project file (*.mine)
-        - the new template file (*.template) 
+        - the new template file (*.template)
         - the project file which has been overwritten with the merged content
           including markers to indicate where the conflicts occurred.
 
-    The project file has to be edited manually or with a merge tool such as kdiff3 to 
-    resolve any conflicts. Once the conflicts have been resolved, the *.mine and 
-    *.template files must be removed either with the --cleanup option or manually 
+    The project file has to be edited manually or with a merge tool such as kdiff3 to
+    resolve any conflicts. Once the conflicts have been resolved, the *.mine and
+    *.template files must be removed either with the --cleanup option or manually
     before another update is possible.""",
         formatter_class=argparse.RawTextHelpFormatter,
         argument_default=None,
@@ -920,7 +920,7 @@ See https://cmake-basis.github.io/download.html#software-license.""")
             help="""Root directory of project template. Paths can be absolute or relative to
 either the current working directory or the installation directory of the
 default templates. The configured default template is used if none specified.""")
-    
+
     # --templates-dir
     class PrintTemplatesDir(argparse.Action):
         def __call__(self, parser, namespace, values, option_string):
@@ -945,7 +945,7 @@ default templates. The configured default template is used if none specified."""
         args.template = template_abspath(args.template)
     else:
         args.template = _template
-    
+
     template_parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,add_help=False)
     custom_template_group = template_parser.add_argument_group("optional arguments imported from template\n'" + args.template + "'")
 
@@ -957,9 +957,9 @@ default templates. The configured default template is used if none specified."""
         sys.stderr.write('\nPlease specify a valid project template directory using --template.\n')
         sys.exit(1)
     config, custom_template_group = load_config(config_file, custom_template_group)
-    
+
     subparsers = parser.add_subparsers(help='Command specifying the type of modification to make.', dest='subparser_name')
-    
+
     # ----------------------------------------------------------------------------
     # the shared_parser is for commands that work across all subparsers
     shared_parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,add_help=False)
@@ -997,7 +997,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
             help="""Name of external package required by tests of this project (case sensitive).""")
     depends_parser.add_argument('--useopttest', metavar='<pkg>', action='append', default=[],
             help="""Name of external package optionally used by tests of this project (case sensitive).""")
-    
+
     # ----------------------------------------------------------------------------
     # command: create
     create_parser = subparsers.add_parser('create', parents=[shared_parser,depends_parser,template_parser],
@@ -1069,14 +1069,14 @@ been edited since their creation are removed.""")
 
     # ----------------------------------------------------------------------------
     # parse common options
-    
+
     # @sa https://stackoverflow.com/questions/20094215/argparse-subparser-monolithic-help-output
     if hasattr(args, 'helpall') and args.helpall:
         # print main help
         parser.print_help()
         # retrieve subparsers from parser
         subparsers_actions = [
-            action for action in parser._actions 
+            action for action in parser._actions
             if isinstance(action, argparse._SubParsersAction)]
         # there will probably only be one subparser_action,
         # but better save than sorry
@@ -1192,7 +1192,7 @@ been edited since their creation are removed.""")
         print("Template: " + args.template)
         print("Original: " + args.original_template)
         print
- 
+
     # ------------------------------------------------------------------------
     # adjust template options
     args.ops = get_config_options(args.root, config, args, create)
